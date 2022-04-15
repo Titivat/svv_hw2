@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>C:/Users/natthapong.ju/OneDrive - KMITL/Code/IdeaProjects/OrderManagement</OriginalElement>
+  <nodes>
+    <node x="622.0" y="341.0">th.ac.kmitl.se.Order</node>
+    <node x="476.0" y="0.0">th.ac.kmitl.se.Address</node>
+    <node x="620.0" y="715.0">th.ac.kmitl.se.PaymentCallback</node>
+    <node x="368.0" y="845.0">th.ac.kmitl.se.PaymentService</node>
+    <node x="297.0" y="206.0">th.ac.kmitl.se.ShippingService</node>
+    <node x="369.0" y="541.0">th.ac.kmitl.se.OrderDB</node>
+    <node x="0.0" y="441.0">th.ac.kmitl.se.OrderTest</node>
+    <node x="745.0" y="880.0">th.ac.kmitl.se.Card</node>
+    <node x="355.0" y="404.0">th.ac.kmitl.se.ProductDB</node>
+  </nodes>
+  <notes />
+  <edges />
+  <settings layout="Hierarchic" zoom="0.656282450674974" showDependencies="true" x="534.5" y="471.5" />
+  <SelectedNodes>
+    <node>th.ac.kmitl.se.OrderDB</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>Project Files</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
