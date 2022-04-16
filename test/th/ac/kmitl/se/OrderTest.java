@@ -38,17 +38,31 @@ class OrderTest {
 
     @Test
     void testCancelingUnpaidOrder() {
+        Address mockAddress = new Address("name", "line1", "line2", "district", "city", "postcode");
+        when(orderDB.getOrderID()).thenReturn(1);
 
+        order.place("John", "Appl Watch", 2, mockAddress);
+        assertEquals(Order.Status.PLACED, order.getStatus());
+
+        order.cancel();
+        assertEquals(Order.Status.CANCELED, order.getStatus());
+
+        when(orderDB.retrieveOrder(1)).thenReturn( order );
+        assertEquals( orderDB.retrieveOrder(1), order);
     }
 
     @Test
     void testPaymentSuccess() {
+        Address mockAddress = new Address("name", "line1", "line2", "district", "city", "postcode");
+        when(orderDB.getOrderID()).thenReturn(1);
 
+        order.place("John", "Appl Watch", 2, mockAddress);
+        assertEquals(Order.Status.PLACED, order.getStatus());
     }
 
     @Test
     void testPaymentError() {
-
+        //doAnswer
     }
 
     @Test
