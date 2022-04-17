@@ -70,6 +70,9 @@ public class Order {
         }
     }
 
+    public String getTrackingCode(){
+        return this.trackingCode;
+    }
     public void ship() {
         if (status==Status.PAID) {
             float productWeight = productDB.getWeight(productID);
