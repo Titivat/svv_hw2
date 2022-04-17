@@ -201,7 +201,49 @@ class OrderTest {
 
     @Test
     void testCancelingPaidOrderSuccess() {
+        Address mockAddress = new Address("name", "line1", "line2", "district", "city", "postcode");
+        when(orderDB.getOrderID()).thenReturn(1);
 
+        order.place("John", "Appl Watch", 2, mockAddress);
+        assertEquals(Order.Status.PLACED, order.getStatus());
+
+        //payment
+        Card card = new Card("123", "JohnCena", 2, 2023);
+        // pho getTotalCost to work
+        when(productDB.getPrice("Appl Watch")).thenReturn(1500.0F);
+        when(productDB.getWeight("Appl Watch")).thenReturn(350.0F);
+        when(shippingService.getPrice(mockAddress, 700.0F)).thenReturn(50.0F);
+        assertEquals(order.getTotalCost(), 3050.0F);
+
+        //check for Status.PAYMENT_CHECK
+        order.pay(card);
+        assertEquals(Order.Status.PAYMENT_CHECK, order.getStatus());
+        verify(orderDB, times(2)).update(order);
+
+        // trigger .onSuccess()
+        ArgumentCaptor<PaymentCallback> callbackCaptor = ArgumentCaptor.forClass(PaymentCallback.class);
+
+        verify(paymentService).pay(any(Card.class), anyFloat(), callbackCaptor.capture());
+        callbackCaptor.getValue().onSuccess("123");
+
+        assertEquals(Order.Status.PAID, order.getStatus());
+        assertEquals(order.paymentConfirmCode, "123");
+        verify(orderDB, times(3)).update(order);
+
+        // refund
+        order.refund();
+
+        assertEquals(Order.Status.AWAIT_REFUND, order.getStatus());
+        verify(orderDB, times(4)).update(order);
+
+        //refund from payment service
+        ArgumentCaptor<PaymentCallback> callbackCaptorRefund = ArgumentCaptor.forClass(PaymentCallback.class);
+
+        verify(paymentService).refund(any(), callbackCaptorRefund.capture());
+        callbackCaptorRefund.getValue().onSuccess("123");
+
+        assertEquals(Order.Status.REFUNDED, order.getStatus());
+        verify(orderDB, times(5)).update(order);
     }
 
     @Test
