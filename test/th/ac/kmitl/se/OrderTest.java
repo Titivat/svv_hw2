@@ -71,13 +71,14 @@ class OrderTest {
         //check for Status.PAYMENT_CHECK
         order.pay(card);
         assertEquals(Order.Status.PAYMENT_CHECK, order.getStatus());
+        verify(orderDB, times(2)).update(order);
 
         ArgumentCaptor<PaymentCallback> callbackCaptor = ArgumentCaptor.forClass(PaymentCallback.class);
 
         verify(paymentService).pay(any(Card.class), anyFloat(), callbackCaptor.capture());
         callbackCaptor.getValue().onSuccess("123");
-
         assertEquals(Order.Status.PAID, order.getStatus());
+        verify(orderDB, times(3)).update(order);
     }
 
     @Test
@@ -95,11 +96,12 @@ class OrderTest {
         when(productDB.getWeight("Appl Watch")).thenReturn(350.0F);
         when(shippingService.getPrice(mockAddress, 700.0F)).thenReturn(50.0F);
         assertEquals(order.getTotalCost(), 3050.0F);
-
         verify(orderDB).update(order);
-        //check for Status.PAYMENT_ERROR
+
+        //check for Status.PAYMENT_CHECK
         order.pay(card);
         assertEquals(Order.Status.PAYMENT_CHECK, order.getStatus());
+        verify(orderDB, times(2)).update(order);
 
         ArgumentCaptor<PaymentCallback> callbackCaptor = ArgumentCaptor.forClass(PaymentCallback.class);
 
@@ -107,31 +109,11 @@ class OrderTest {
         callbackCaptor.getValue().onError("123");
 
         assertEquals(Order.Status.PAYMENT_ERROR, order.getStatus());
+        verify(orderDB, times(3)).update(order);
     }
 
     @Test
     void testPaymentRetrySuccess() {
-        float price = 1500f;
-        float weight = 350f;
-        int quantity = 2;
-        String productID = "Apple Watch";
-        String successCode = "1234";
-        Address mockAddress = new Address("name", "line1", "line2", "district", "city", "postcode");
-        Card card = new Card("123", "JohnCena", 2, 2023);
-
-        when(orderDB.getOrderID()).thenReturn(1);
-        when(productDB.getPrice(productID)).thenReturn(price);
-        when(productDB.getWeight(productID)).thenReturn(weight);
-        when(shippingService.getPrice(mockAddress,weight*quantity)).thenReturn(50f);
-        order.place("John", productID,quantity, mockAddress);
-        assertEquals(Order.Status.PLACED, order.getStatus());
-        verify(orderDB, times(1)).update(order);
-        //Execute without callback
-        order.pay(card);
-        //Verify
-        assertEquals(Order.Status.PAYMENT_CHECK, order.getStatus());
-        assertEquals(3050f, order.getTotalCost());
-        verify(orderDB, times(2)).update(order);
     }
 
     @Test
